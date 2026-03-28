@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, ReactNode } from "react";
 import type { Message } from "@/lib/vital-buddy-types";
 import { EscalationBubble } from "./escalation-bubble";
 import { StressSlider } from "./stress-slider";
@@ -13,6 +13,175 @@ interface ChatMessagesProps {
   onSliderChange: (v: number) => void;
   onSliderSubmit: (v: number) => void;
   loading?: boolean;
+}
+
+function renderMessageContent(text: string): ReactNode {
+  const vimeoRegex = /https?:\/\/(?:www\.)?vimeo\.com\/(\d+)/g;
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  
+  const parts: ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+
+  // First, handle Vimeo URLs
+  const vimeoMatches: Array<{ url: string; id: string; index: number }> = [];
+  while ((match = vimeoRegex.exec(text)) !== null) {
+    vimeoMatches.push({
+      url: match[0],
+      id: match[1],
+      index: match.index,
+    });
+  }
+
+  if (vimeoMatches.length === 0) {
+    // No Vimeo videos, just handle regular URLs and text
+    const textParts: ReactNode[] = [];
+    let textLastIndex = 0;
+    const urlMatches = [...text.matchAll(urlRegex)];
+    
+    urlMatches.forEach((urlMatch) => {
+      if (urlMatch.index! > textLastIndex) {
+        textParts.push(text.substring(textLastIndex, urlMatch.index));
+      }
+      textParts.push(
+        <a
+          key={`url-${urlMatch.index}`}
+          href={urlMatch[0]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+          style={{ color: "var(--brand)" }}
+        >
+          {urlMatch[0]}
+        </a>
+      );
+      textLastIndex = urlMatch.index! + urlMatch[0].length;
+    });
+    
+    if (textLastIndex < text.length) {
+      textParts.push(text.substring(textLastIndex));
+    }
+    return <span>{textParts}</span>;
+  }
+
+  // Handle mixed content with Vimeo videos
+  vimeoMatches.forEach((vimeo, idx) => {
+    // Add text before this Vimeo URL
+    if (vimeo.index > lastIndex) {
+      const beforeText = text.substring(lastIndex, vimeo.index);
+      const urlMatches = [...beforeText.matchAll(urlRegex)];
+      const beforeParts: ReactNode[] = [];
+      let beforeLastIndex = 0;
+
+      urlMatches.forEach((urlMatch) => {
+        if (urlMatch.index! > beforeLastIndex) {
+          beforeParts.push(beforeText.substring(beforeLastIndex, urlMatch.index));
+        }
+        beforeParts.push(
+          <a
+            key={`url-${lastIndex}-${urlMatch.index}`}
+            href={urlMatch[0]}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+            style={{ color: "var(--brand)" }}
+          >
+            {urlMatch[0]}
+          </a>
+        );
+        beforeLastIndex = urlMatch.index! + urlMatch[0].length;
+      });
+
+      if (beforeLastIndex < beforeText.length) {
+        beforeParts.push(beforeText.substring(beforeLastIndex));
+      }
+
+      if (beforeParts.length > 0) {
+        parts.push(beforeParts);
+      }
+    }
+
+    // Add Vimeo video embed
+    parts.push(
+      <div key={`vimeo-${idx}`} className="mt-2 mb-1">
+        <div
+          className="rounded-xl overflow-hidden"
+          style={{
+            border: "0.5px solid var(--border)",
+            aspectRatio: "16/9",
+          }}
+        >
+          <iframe
+            src={`https://player.vimeo.com/video/${vimeo.id}?badge=0&autopause=0&player_id=0`}
+            width="100%"
+            height="100%"
+            frameBorder="0"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+            title="Vital Buddy resource"
+            style={{ display: "block" }}
+            sandbox="allow-scripts allow-same-origin"
+          />
+        </div>
+        <div
+          className="flex items-center gap-1.5 mt-1"
+          style={{
+            fontSize: "11px",
+            color: "var(--foreground-ghost)",
+          }}
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          <span>Vital Buddy resource</span>
+        </div>
+      </div>
+    );
+
+    lastIndex = vimeo.index + vimeo.url.length;
+  });
+
+  // Add any remaining text after the last Vimeo URL
+  if (lastIndex < text.length) {
+    const remainingText = text.substring(lastIndex);
+    const urlMatches = [...remainingText.matchAll(urlRegex)];
+    const remainingParts: ReactNode[] = [];
+    let remainingLastIndex = 0;
+
+    urlMatches.forEach((urlMatch) => {
+      if (urlMatch.index! > remainingLastIndex) {
+        remainingParts.push(remainingText.substring(remainingLastIndex, urlMatch.index));
+      }
+      remainingParts.push(
+        <a
+          key={`url-end-${urlMatch.index}`}
+          href={urlMatch[0]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+          style={{ color: "var(--brand)" }}
+        >
+          {urlMatch[0]}
+        </a>
+      );
+      remainingLastIndex = urlMatch.index! + urlMatch[0].length;
+    });
+
+    if (remainingLastIndex < remainingText.length) {
+      remainingParts.push(remainingText.substring(remainingLastIndex));
+    }
+
+    if (remainingParts.length > 0) {
+      parts.push(remainingParts);
+    }
+  }
+
+  return <span>{parts}</span>;
 }
 
 function TypingIndicator() {
@@ -43,7 +212,7 @@ export function ChatMessages({ messages, phase, showSlider, sliderValue, onSlide
               background: isUser ? "var(--brand-light)" : "var(--card)",
               color: isUser ? "var(--brand-dark)" : "var(--foreground-muted)",
               border: isUser ? "none" : "0.5px solid var(--border)",
-            }}>{m.text}</div>
+            }}>{isUser ? m.text : renderMessageContent(m.text)}</div>
           </div>
         );
       })}
