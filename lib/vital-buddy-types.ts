@@ -58,6 +58,7 @@ export type Message = {
   from: "ai" | "user" | "system";
   type: "normal" | "escalation";
   time: Date;
+  resources?: any[];
 };
 
 export type Mode = (typeof MODES)[number];

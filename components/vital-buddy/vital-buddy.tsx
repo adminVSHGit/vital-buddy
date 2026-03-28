@@ -27,8 +27,8 @@ export function VitalBuddy() {
   const [showResources, setShowResources] = useState(false);
   const [history, setHistory] = useState<{ role: string; content: string }[]>([]);
 
-  const addMsg = useCallback((text: string, from: Message["from"] = "ai", type: Message["type"] = "normal") => {
-    setMessages((prev) => [...prev, { text, from, type, time: new Date() }]);
+  const addMsg = useCallback((text: string, from: Message["from"] = "ai", type: Message["type"] = "normal", resources: any[] = []) => {
+    setMessages((prev) => [...prev, { text, from, type, time: new Date(), resources }]);
     if (from === "user") setHistory((prev) => [...prev, { role: "user", content: text }]);
     else if (type === "normal" && from === "ai") setHistory((prev) => [...prev, { role: "assistant", content: text }]);
   }, []);
@@ -39,7 +39,9 @@ export function VitalBuddy() {
     if (!text) return;
     if (res.type === "escalation" || res.filtered) {
       try { const p = JSON.parse(text); addMsg(p.message || text, "ai", "escalation"); } catch { addMsg(text, "ai", "escalation"); }
-    } else { addMsg(text); }
+    } else {
+      addMsg(text, "ai", "normal", res.resources || []);
+    }
   }, [addMsg]);
 
   const handleModeSelect = async (m: Mode) => {
@@ -122,8 +124,8 @@ export function VitalBuddy() {
         )}
         <ResourceDrawer isOpen={showResources} onClose={() => setShowResources(false)} />
       </main>
-      {phase === "chat" && !showCloseSlider && <ChatInput value={input} onChange={setInput} onSend={handleSend} disabled={loading} />}
-      <PersistentFooter />
+      {phase === "chat" && !showCloseSlider && <ChatInput value={input} onChange={setInput} onSend={handleSend} disabled={loading} onOpenResources={() => setShowResources(true)} />}
+      <PersistentFooter onOpenResources={() => setShowResources(true)} />
     </div>
   );
 }

@@ -65,12 +65,19 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
   useEffect(() => {
     if (isOpen && resources.length === 0) {
       setLoading(true);
-      // Fallback: load resources from hardcoded list
-      // In production, create a separate /resources endpoint
-      setTimeout(() => {
-        setResources([]);
-        setLoading(false);
-      }, 500);
+      fetch("/api/webhook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: "/resources", body: {} }),
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.resources && Array.isArray(data.resources)) {
+            setResources(data.resources);
+          }
+        })
+        .catch(() => {})
+        .finally(() => setLoading(false));
     }
   }, [isOpen, resources.length]);
 

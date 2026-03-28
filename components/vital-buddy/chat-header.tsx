@@ -35,14 +35,14 @@ export function ChatHeader({ phase, openScore, onEndSession, onOpenResources }: 
         </div>
 
         {/* Logo — always top right */}
-        <div className="shrink-0" style={{ width: '90px', height: '28px' }}>
+        <div className="shrink-0">
           <Image
             src="/vital-start-logo.png"
             alt="VitalStart"
             width={90}
             height={28}
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
             priority
+            style={{ height: 'auto', maxWidth: '90px' }}
           />
         </div>
       </div>
