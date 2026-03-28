@@ -3,7 +3,7 @@ import { VitalBuddy } from "@/components/vital-buddy/vital-buddy";
 export default function Page() {
   return (
     <main 
-      className="h-[100dvh] md:min-h-screen flex items-center justify-center md:p-4 font-sans relative overflow-hidden" 
+      className="min-h-screen flex items-center justify-center p-4 font-sans relative" 
       style={{ 
         background: "#e3f2fd",
         backgroundImage: "url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/beachimg-Rw4sY4UdNvudI1bGDZQt74wHaFdctA.png')",
@@ -16,7 +16,7 @@ export default function Page() {
       {/* Subtle overlay to preserve readability */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: "rgba(227, 242, 253, 0.35)" }} />
       
-      <div className="w-full h-full md:h-auto md:max-w-sm relative z-10">
+      <div className="w-full max-w-sm relative z-10">
         <VitalBuddy />
       </div>
     </main>
