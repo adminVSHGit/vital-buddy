@@ -110,7 +110,7 @@ export function VitalBuddy() {
   };
 
   return (
-    <div className="flex flex-col w-full h-full max-h-[740px] rounded-2xl overflow-hidden border border-border" style={{ background: "var(--background)" }}>
+    <div className="flex flex-col w-full h-full max-h-[740px] rounded-2xl overflow-hidden border border-border" style={{ background: "var(--background)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", boxShadow: "0 8px 32px rgba(83, 74, 183, 0.08), 0 2px 8px rgba(0,0,0,0.06)" }}>
       <div className="flex items-center gap-1.5 px-4 py-1.5 text-xs border-b" style={{ background: isConnected() ? "#EAF3DE" : "#FAEEDA", borderColor: isConnected() ? "#C0DD97" : "#EF9F27", color: isConnected() ? "#27500A" : "#633806" }}>
         <div className="w-1.5 h-1.5 rounded-full" style={{ background: isConnected() ? "#639922" : "#BA7517" }} />
         {isConnected() ? "Connected to n8n" : "Demo mode — set NEXT_PUBLIC_N8N_WEBHOOK_URL to connect"}
