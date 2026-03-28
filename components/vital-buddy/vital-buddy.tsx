@@ -10,7 +10,7 @@ import { CrisisScreen } from "./crisis-screen";
 import { ChatInput } from "./chat-input";
 import { PersistentFooter } from "./persistent-footer";
 
-const CRISIS_KEYWORDS = ["suicide","suicidal","kill myself","end it all","better off dead","no reason to live","want to die","self-harm","hurt myself","end my life","not worth living"];
+const CRISIS_KEYWORDS = ["suicide", "suicidal", "kill myself", "end it all", "better off dead", "no reason to live", "want to die", "self-harm", "hurt myself", "end my life", "not worth living"];
 
 export function VitalBuddy() {
   const [phase, setPhase] = useState<Phase>("mode_select");
@@ -41,6 +41,17 @@ export function VitalBuddy() {
   }, [addMsg]);
 
   const handleModeSelect = async (m: Mode) => {
+    try {
+      const testRes = await fetch('/api/webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: '/session-start', body: { mode: m.id, anonymous_token: 'test', session_id: 'test' } })
+      });
+      const testData = await testRes.json();
+      alert('Proxy status: ' + testRes.status + ' | Response type: ' + (testData.type || 'none') + ' | Message: ' + (testData.message || testData.output || 'empty').substring(0, 100));
+    } catch (e) {
+      alert('Proxy error: ' + e.message);
+    }
     setMode(m); setPhase("stress_open");
     const sid = crypto.randomUUID(); setSessionId(sid);
     if (isConnected()) {
@@ -49,10 +60,10 @@ export function VitalBuddy() {
       setLoading(false); handleN8NResponse(res);
     } else {
       const fb: Record<string, string[]> = {
-        standard: ["Hey — how's the shift been? Before we get into it...","I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
-        critical_event: ["Sounds like a rough one. I've had those cases where you just stand in the hallway for a second. Let's check in.","I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
-        grounding: ["Two minutes. I promise this works even when it sounds dumb. Ready?","I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
-        pre_convo: ["Family meetings are rough. I still get nervous before them. Let's get you ready.","I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
+        standard: ["Hey — how's the shift been? Before we get into it...", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
+        critical_event: ["Sounds like a rough one. I've had those cases where you just stand in the hallway for a second. Let's check in.", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
+        grounding: ["Two minutes. I promise this works even when it sounds dumb. Ready?", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
+        pre_convo: ["Family meetings are rough. I still get nervous before them. Let's get you ready.", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
       };
       (fb[m.id] ?? fb.standard).forEach((line) => addMsg(line));
     }
@@ -60,7 +71,8 @@ export function VitalBuddy() {
 
   const handleOpenScore = async (s: number) => {
     addMsg(String(s), "user"); setOpenScore(s);
-    if (s === 10) { setShowCrisis(true); setPhase("crisis");
+    if (s === 10) {
+      setShowCrisis(true); setPhase("crisis");
       if (isConnected() && sessionId && mode) sendMessage({ sessionId, message: "STRESS_SCORE:10", openingScore: 10, mode: mode.id, history: [] });
       return;
     }
@@ -86,9 +98,9 @@ export function VitalBuddy() {
       const res = await sendMessage({ sessionId, message: text, openingScore: openScore, mode: mode.id, history: history.slice(-10) });
       setLoading(false); handleN8NResponse(res);
     } else {
-      const oos = ["dosage","prescri","diagnos","medication","should i take","what drug","what pill","is this depression","do i have"];
+      const oos = ["dosage", "prescri", "diagnos", "medication", "should i take", "what drug", "what pill", "is this depression", "do i have"];
       if (oos.some((w) => lc.includes(w))) { setMessages((prev) => [...prev, { text: "__ESCALATION__", from: "ai", type: "escalation", time: new Date() }]); return; }
-      const fb = ["That sounds really heavy. When you step back, what do you think is driving most of that weight?","I hear you. Is this something that needs solving today, or something you need to just survive today?","That makes sense. What would you tell a fellow resident if they came to you with exactly this?","You're carrying a lot. What's one piece of this that is actually in your hands right now?","That's a really valid response to an impossible situation. What would 'good enough for today' look like?"];
+      const fb = ["That sounds really heavy. When you step back, what do you think is driving most of that weight?", "I hear you. Is this something that needs solving today, or something you need to just survive today?", "That makes sense. What would you tell a fellow resident if they came to you with exactly this?", "You're carrying a lot. What's one piece of this that is actually in your hands right now?", "That's a really valid response to an impossible situation. What would 'good enough for today' look like?"];
       setTimeout(() => addMsg(fb[Math.floor(Math.random() * fb.length)]), 800);
     }
   };
