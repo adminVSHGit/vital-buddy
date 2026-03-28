@@ -41,21 +41,21 @@ export function VitalBuddy() {
   }, [addMsg]);
 
   const handleModeSelect = async (m: Mode) => {
-
     setMode(m); setPhase("stress_open");
     const sid = crypto.randomUUID(); setSessionId(sid);
+
+    // Show opening INSTANTLY from local — no waiting
+    const openers: Record<string, string[]> = {
+      standard: ["Hey — how's the shift been? Before we get into it...", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
+      critical_event: ["Sounds like a rough one. I've had those cases where you just stand in the hallway for a second. Let's check in.", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
+      grounding: ["Two minutes. I promise this works even when it sounds dumb. Ready?", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
+      pre_convo: ["Family meetings are rough. I still get nervous before them. Let's get you ready.", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
+    };
+    (openers[m.id] ?? openers.standard).forEach((line) => addMsg(line));
+
+    // Call n8n in background for session logging — don't wait for it
     if (isConnected()) {
-      setLoading(true);
-      const res = await startSession(m.id, sid);
-      setLoading(false); handleN8NResponse(res);
-    } else {
-      const fb: Record<string, string[]> = {
-        standard: ["Hey — how's the shift been? Before we get into it...", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
-        critical_event: ["Sounds like a rough one. I've had those cases where you just stand in the hallway for a second. Let's check in.", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
-        grounding: ["Two minutes. I promise this works even when it sounds dumb. Ready?", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
-        pre_convo: ["Family meetings are rough. I still get nervous before them. Let's get you ready.", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
-      };
-      (fb[m.id] ?? fb.standard).forEach((line) => addMsg(line));
+      startSession(m.id, sid).catch(() => {});
     }
   };
 
