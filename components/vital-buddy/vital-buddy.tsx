@@ -9,7 +9,7 @@ import { ChatMessages } from "./chat-messages";
 import { CrisisScreen } from "./crisis-screen";
 import { ChatInput } from "./chat-input";
 import { PersistentFooter } from "./persistent-footer";
-import { ResourceDrawer } from "./resource-drawer";
+import { ResourceDrawer } from "./wellness-resources";
 
 const CRISIS_KEYWORDS = ["suicide", "suicidal", "kill myself", "end it all", "better off dead", "no reason to live", "want to die", "self-harm", "hurt myself", "end my life", "not worth living"];
 
