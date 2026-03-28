@@ -111,10 +111,6 @@ export function VitalBuddy() {
 
   return (
     <div className="flex flex-col w-full h-full max-h-[740px] rounded-2xl overflow-hidden" style={{ background: "var(--background)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", boxShadow: "0 8px 32px rgba(83, 74, 183, 0.12), 0 0 0 1px rgba(255,255,255,0.5) inset", border: "1px solid rgba(255,255,255,0.3)" }}>
-      <div className="flex items-center gap-1.5 px-4 py-1.5 text-xs border-b" style={{ background: isConnected() ? "#EAF3DE" : "#FAEEDA", borderColor: isConnected() ? "#C0DD97" : "#EF9F27", color: isConnected() ? "#27500A" : "#633806" }}>
-        <div className="w-1.5 h-1.5 rounded-full" style={{ background: isConnected() ? "#639922" : "#BA7517" }} />
-        {isConnected() ? "Connected to n8n" : "Demo mode — set NEXT_PUBLIC_N8N_WEBHOOK_URL to connect"}
-      </div>
       <ChatHeader phase={phase} openScore={openScore} onEndSession={handleEndSession} onOpenResources={() => setShowResources(true)} />
       <main className="flex-1 overflow-y-auto relative">
         {phase === "mode_select" && <ModeSelect onSelect={handleModeSelect} />}
