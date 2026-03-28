@@ -16,7 +16,7 @@ interface ChatMessagesProps {
 }
 
 function renderMessageContent(text: string): ReactNode {
-  const vimeoRegex = /https?:\/\/(?:www\.)?vimeo\.com\/(\d+)/g;
+  const vimeoRegex = /https?:\/\/(?:www\.)?vimeo\.com\/\d+[^\s)"\]']*/g;
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   
   const parts: ReactNode[] = [];
@@ -26,11 +26,16 @@ function renderMessageContent(text: string): ReactNode {
   // First, handle Vimeo URLs
   const vimeoMatches: Array<{ url: string; id: string; index: number }> = [];
   while ((match = vimeoRegex.exec(text)) !== null) {
-    vimeoMatches.push({
-      url: match[0],
-      id: match[1],
-      index: match.index,
-    });
+    const matchedUrl = match[0];
+    const idMatch = matchedUrl.match(/vimeo\.com\/(\d+)/);
+    const vimeoId = idMatch ? idMatch[1] : null;
+    if (vimeoId) {
+      vimeoMatches.push({
+        url: matchedUrl,
+        id: vimeoId,
+        index: match.index,
+      });
+    }
   }
 
   if (vimeoMatches.length === 0) {

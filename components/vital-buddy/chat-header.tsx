@@ -34,7 +34,7 @@ export function ChatHeader({ phase, openScore, onEndSession }: ChatHeaderProps) 
         </div>
 
         {/* Logo — always top right */}
-        <div className="shrink-0 h-7 w-auto relative" style={{ width: '90px' }}>
+        <div className="shrink-0 relative" style={{ width: '90px', height: '28px' }}>
           <Image
             src="/vital-start-logo.png"
             alt="VitalStart"
