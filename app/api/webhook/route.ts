@@ -14,6 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     const url = `${n8nBaseUrl}${path}`;
+    console.log("[v0] Calling n8n webhook:", url);
 
     const response = await fetch(url, {
       method: "POST",
@@ -22,6 +23,8 @@ export async function POST(request: NextRequest) {
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.log("[v0] n8n error response:", response.status, errorText);
       throw new Error(`${response.status} ${response.statusText}`);
     }
 
