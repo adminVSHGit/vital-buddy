@@ -110,7 +110,7 @@ export function VitalBuddy() {
   };
 
   return (
-    <div className="flex flex-col w-full h-full max-h-[740px] rounded-2xl overflow-hidden" style={{ background: "var(--background)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", boxShadow: "0 8px 32px rgba(83, 74, 183, 0.12), 0 0 0 1px rgba(255,255,255,0.5) inset", border: "1px solid rgba(255,255,255,0.3)" }}>
+    <div className="flex flex-col w-full h-full md:max-h-[740px] md:rounded-2xl overflow-hidden" style={{ background: "var(--background)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", boxShadow: "0 8px 32px rgba(83, 74, 183, 0.12), 0 0 0 1px rgba(255,255,255,0.5) inset", border: "1px solid rgba(255,255,255,0.3)" }}>
       <ChatHeader phase={phase} openScore={openScore} onEndSession={handleEndSession} onOpenResources={() => setShowResources(true)} />
       <main className="flex-1 overflow-y-auto relative">
         {phase === "mode_select" && <ModeSelect onSelect={handleModeSelect} />}

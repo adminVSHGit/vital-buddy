@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+// Resource drawer component
 
 interface Resource {
   id: string;
