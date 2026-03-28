@@ -4,7 +4,7 @@ export async function POST(request: NextRequest) {
   try {
     const { path, body } = await request.json();
 
-    const n8nBaseUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL;
+    let n8nBaseUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL;
 
     if (!n8nBaseUrl) {
       return NextResponse.json(
@@ -13,6 +13,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Remove trailing slash from base URL to avoid double slashes
+    n8nBaseUrl = n8nBaseUrl.replace(/\/+$/, "");
+    
     const url = `${n8nBaseUrl}${path}`;
     console.log("[v0] Calling n8n webhook:", url);
 
