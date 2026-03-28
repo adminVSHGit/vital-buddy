@@ -1,0 +1,147 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Brand */
+  --brand: #534AB7;
+  --brand-light: #EEEDFE;
+  --brand-dark: #26215C;
+
+  /* shadcn tokens mapped to Vital Buddy palette */
+  --background: #faf9f6;
+  --foreground: #1a1a2e;
+  --card: #ffffff;
+  --card-foreground: #1a1a2e;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a2e;
+  --primary: #1a1a2e;
+  --primary-foreground: #faf9f6;
+  --secondary: #F1EFE8;
+  --secondary-foreground: #3d3d3a;
+  --muted: #F1EFE8;
+  --muted-foreground: #8a8580;
+  --accent: #EEEDFE;
+  --accent-foreground: #26215C;
+  --destructive: #A32D2D;
+  --destructive-foreground: #ffffff;
+  --border: #e8e4dc;
+  --input: #e8e4dc;
+  --ring: #534AB7;
+  --radius: 0.75rem;
+
+  /* Extended palette */
+  --surface-secondary: #F1EFE8;
+  --border-muted: #d4cfc7;
+  --foreground-muted: #3d3d3a;
+  --foreground-subtle: #7a756d;
+  --foreground-faint: #8a8580;
+  --foreground-ghost: #b0aca4;
+  --foreground-ghost-2: #c7c3bc;
+  --danger: #A32D2D;
+  --danger-light: #FCEBEB;
+  --warning: #EF9F27;
+  --warning-light: #FAEEDA;
+  --warning-dark: #854F0B;
+  --warning-text: #4A1B0C;
+  --sidebar: #faf9f6;
+  --sidebar-foreground: #1a1a2e;
+  --sidebar-primary: #1a1a2e;
+  --sidebar-primary-foreground: #faf9f6;
+  --sidebar-accent: #F1EFE8;
+  --sidebar-accent-foreground: #3d3d3a;
+  --sidebar-border: #e8e4dc;
+  --sidebar-ring: #534AB7;
+}
+
+/* Dark mode intentionally mirrors light for this clinical UI */
+.dark {
+  --background: #faf9f6;
+  --foreground: #1a1a2e;
+}
+
+@theme inline {
+  --font-sans: 'Geist', 'Geist Fallback';
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-brand: var(--brand);
+  --color-brand-light: var(--brand-light);
+  --color-brand-dark: var(--brand-dark);
+  --color-danger: var(--danger);
+  --color-danger-light: var(--danger-light);
+  --color-warning: var(--warning);
+  --color-warning-light: var(--warning-light);
+  --color-warning-dark: var(--warning-dark);
+  --color-warning-text: var(--warning-text);
+  --color-border-muted: var(--border-muted);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-subtle: var(--foreground-subtle);
+  --color-foreground-faint: var(--foreground-faint);
+  --color-foreground-ghost: var(--foreground-ghost);
+  --color-foreground-ghost-2: var(--foreground-ghost-2);
+  --color-surface-secondary: var(--surface-secondary);
+}
+
+@layer base {
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--border);
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--brand);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    transition: background 0.2s;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--brand);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
