@@ -95,7 +95,7 @@ export function VitalBuddy() {
     }
   };
 
-  const handleEndSession = () => { setShowCloseSlider(true); addMsg("I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"); };
+  const handleEndSession = () => { setShowCloseSlider(true); addMsg("Alright, catch up soon! I am always here for you. Before you go, how are you feeling now from 0 to 10 with 10 being the most stressed? This helps me support you better, thanks!"); };
 
   const handleCloseScore = async (s: number) => {
     addMsg(String(s), "user"); setShowCloseSlider(false);

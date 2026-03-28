@@ -40,7 +40,7 @@ export function ChatHeader({ phase, openScore, onEndSession }: ChatHeaderProps) 
             alt="VitalStart"
             width={90}
             height={28}
-            style={{ height: '28px', width: 'auto', maxWidth: 'none' }}
+            style={{ height: 'auto', width: '90px', maxWidth: 'none' }}
             priority
           />
         </div>
