@@ -7,9 +7,10 @@ interface ChatInputProps {
   onChange: (v: string) => void;
   onSend: () => void;
   disabled?: boolean;
+  onOpenResources?: () => void;
 }
 
-export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps) {
+export function ChatInput({ value, onChange, onSend, disabled, onOpenResources }: ChatInputProps) {
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !disabled) onSend();
   };
@@ -36,6 +37,15 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
           aria-label="Send message"
         >
           Send
+        </button>
+      </div>
+      <div className="flex gap-2 mt-1.5 px-1">
+        <button
+          onClick={onOpenResources}
+          className="text-xs px-2.5 py-1 rounded-lg transition-opacity hover:opacity-80"
+          style={{ background: "var(--brand-light)", color: "var(--brand)" }}
+        >
+          Browse resources
         </button>
       </div>
     </div>
