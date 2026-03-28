@@ -41,6 +41,7 @@ export function ChatHeader({ phase, openScore, onEndSession, onOpenResources }: 
           width={90}
           height={28}
           priority
+          style={{ height: "auto", width: "auto" }}
         />
       </div>
 
