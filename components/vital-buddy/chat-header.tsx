@@ -7,9 +7,10 @@ interface ChatHeaderProps {
   openScore: number | null;
   onEndSession: () => void;
   onOpenResources: () => void;
+  onHome: () => void;
 }
 
-export function ChatHeader({ phase, openScore, onEndSession, onOpenResources }: ChatHeaderProps) {
+export function ChatHeader({ phase, openScore, onEndSession, onOpenResources, onHome }: ChatHeaderProps) {
   const inChat = phase === "chat";
 
   return (
@@ -57,6 +58,13 @@ export function ChatHeader({ phase, openScore, onEndSession, onOpenResources }: 
             </div>
           )}
           <div className="flex-1" />
+          <button
+            onClick={onHome}
+            className="px-2.5 py-1 text-xs font-medium rounded-lg transition-opacity hover:opacity-80 cursor-pointer shrink-0"
+            style={{ background: "var(--surface-secondary)", color: "var(--foreground-subtle)" }}
+          >
+            Home
+          </button>
           <button
             onClick={onOpenResources}
             className="px-2.5 py-1 text-xs font-medium rounded-lg transition-opacity hover:opacity-80 cursor-pointer shrink-0"

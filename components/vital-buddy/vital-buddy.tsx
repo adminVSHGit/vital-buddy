@@ -9,7 +9,7 @@ import { ChatMessages } from "./chat-messages";
 import { CrisisScreen } from "./crisis-screen";
 import { ChatInput } from "./chat-input";
 import { PersistentFooter } from "./persistent-footer";
-import { ResourceDrawer } from "./resources-panel";
+import { ResourceDrawer } from "./resource-drawer";
 
 const CRISIS_KEYWORDS = ["suicide", "suicidal", "kill myself", "end it all", "better off dead", "no reason to live", "want to die", "self-harm", "hurt myself", "end my life", "not worth living"];
 
@@ -116,6 +116,7 @@ export function VitalBuddy() {
   };
 
   const handleEndSession = () => { setShowCloseSlider(true); addMsg("Alright, catch up soon! I am always here for you. Before you go, how are you feeling now from 0 to 10 with 10 being the most stressed? This helps me support you better, thanks!"); };
+  const handleHome = () => { setPhase("mode_select"); setMessages([]); setMode(null); setOpenScore(null); setShowCloseSlider(false); setShowCrisis(false); setHistory([]); setSessionId(null); };
 
   const handleCloseScore = async (s: number) => {
     addMsg(String(s), "user"); setShowCloseSlider(false);
@@ -127,7 +128,7 @@ export function VitalBuddy() {
 
   return (
     <div className="flex flex-col w-full h-full max-h-[740px] rounded-2xl overflow-hidden" style={{ background: "var(--background)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", boxShadow: "0 8px 32px rgba(83, 74, 183, 0.12), 0 0 0 1px rgba(255,255,255,0.5) inset", border: "1px solid rgba(255,255,255,0.3)" }}>
-      <ChatHeader phase={phase} openScore={openScore} onEndSession={handleEndSession} onOpenResources={() => setShowResources(true)} />
+      <ChatHeader phase={phase} openScore={openScore} onEndSession={handleEndSession} onOpenResources={() => setShowResources(true)} onHome={handleHome} />
       <main className="flex-1 overflow-y-auto relative">
         {phase === "mode_select" && <ModeSelect onSelect={handleModeSelect} />}
         {showCrisis && <CrisisScreen onAcknowledge={() => { setShowCrisis(false); setPhase("done"); addMsg("Session ended. Take care of yourself.", "system"); }} />}
