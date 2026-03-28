@@ -54,13 +54,11 @@ export interface N8NResponse {
 }
 
 async function callWebhook(path: string, body: Record<string, unknown>): Promise<N8NResponse> {
-  const url = `${N8N_BASE}${path}`;
-
   try {
-    const res = await fetch(url, {
+    const res = await fetch("/api/webhook", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ path, body }),
     });
 
     if (!res.ok) {
