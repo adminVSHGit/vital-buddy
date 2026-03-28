@@ -14,7 +14,7 @@ export default function Page() {
       }}
     >
       {/* Subtle overlay to preserve readability */}
-      <div className="absolute inset-0 pointer-events-none" style={{ background: "rgba(227, 242, 253, 0.75)" }} />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: "rgba(227, 242, 253, 0.35)" }} />
       
       <div className="w-full max-w-sm relative z-10">
         <VitalBuddy />
