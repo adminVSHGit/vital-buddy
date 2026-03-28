@@ -100,18 +100,9 @@ export function VitalBuddy() {
   const handleCloseScore = async (s: number) => {
     addMsg(String(s), "user"); setShowCloseSlider(false);
     if (isConnected() && sessionId && openScore !== null && mode) {
-      setLoading(true);
-      const res = await closeSession(sessionId, openScore, s, mode.id);
-      setLoading(false);
-      const text = res.message || res.output || ""; if (text) addMsg(text);
-    } else {
-      const delta = (openScore ?? s) - s;
-      if (delta > 0) addMsg(`Your stress moved from ${openScore} to ${s}. That's real. Showing up for yourself when you're this tired takes something. See you next time.`);
-      else if (delta === 0) addMsg(`Your stress stayed at ${s}. Sometimes it's just about not letting it climb higher — that counts.`);
-      else addMsg(`Your stress moved from ${openScore} to ${s}. That was a tough one. Thank you for showing up for yourself. There are people who are good at this — want me to point you somewhere?`);
+      closeSession(sessionId, openScore, s, mode.id);
     }
-    setPhase("done");
-    setTimeout(() => { setPhase("mode_select"); setMessages([]); setScore(4); setOpenScore(null); setSessionId(null); setMode(null); setInput(""); setHistory([]); }, 3500);
+    setPhase("mode_select"); setMessages([]); setScore(4); setOpenScore(null); setSessionId(null); setMode(null); setInput(""); setHistory([]);
   };
 
   return (
