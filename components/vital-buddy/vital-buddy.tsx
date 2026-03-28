@@ -41,17 +41,7 @@ export function VitalBuddy() {
   }, [addMsg]);
 
   const handleModeSelect = async (m: Mode) => {
-    try {
-      const testRes = await fetch('/api/webhook', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: '/session-start', body: { mode: m.id, anonymous_token: 'test', session_id: 'test' } })
-      });
-      const testData = await testRes.json();
-      alert('Proxy status: ' + testRes.status + ' | Response type: ' + (testData.type || 'none') + ' | Message: ' + (testData.message || testData.output || 'empty').substring(0, 100));
-    } catch (e) {
-      alert('Proxy error: ' + e.message);
-    }
+
     setMode(m); setPhase("stress_open");
     const sid = crypto.randomUUID(); setSessionId(sid);
     if (isConnected()) {
