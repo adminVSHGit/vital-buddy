@@ -54,13 +54,12 @@ export interface N8NResponse {
 }
 
 async function callWebhook(path: string, body: Record<string, unknown>): Promise<N8NResponse> {
-  const url = `${N8N_BASE}${path}`;
-
   try {
-    const res = await fetch(url, {
+    // Use server-side proxy to avoid CORS issues
+    const res = await fetch("/api/webhook", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ path, body }),
     });
 
     if (!res.ok) {
@@ -73,7 +72,7 @@ async function callWebhook(path: string, body: Record<string, unknown>): Promise
     return {
       type: "error",
       message:
-        "I'm having trouble connecting right now. If this is a life-threatening emergency, please dial 911 or go to the nearest ER. Otherwise, try again in a moment.",
+        "I am having trouble connecting right now. If this is a life-threatening emergency, please dial 911 or go to the nearest ER. Otherwise, try again in a moment.",
     };
   }
 }
