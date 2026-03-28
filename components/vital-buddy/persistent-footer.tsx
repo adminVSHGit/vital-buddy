@@ -10,18 +10,18 @@ export function PersistentFooter({ onOpenResources }: { onOpenResources?: () => 
         life-threatening emergency, dial 911 or go to the nearest ER immediately.
       </p>
       <nav className="grid grid-cols-2 md:flex md:justify-center gap-x-3 gap-y-0.5 md:gap-5 mt-1" aria-label="Footer links">
-        <button className="cursor-pointer hover:underline text-left md:text-center" style={{ color: "var(--brand)", fontSize: "10px" }}>
+        <a href="mailto:support@vitalstart.com" className="cursor-pointer hover:underline text-left md:text-center" style={{ color: "var(--brand)", fontSize: "10px" }}>
           Connect to support
-        </button>
+        </a>
         <button onClick={onOpenResources} className="cursor-pointer hover:underline text-left md:text-center" style={{ color: "var(--brand)", fontSize: "10px" }}>
           Browse resources
         </button>
-        <button className="cursor-pointer hover:underline text-left md:text-center" style={{ color: "var(--brand)", fontSize: "10px" }}>
+        <a href="https://vitalstart.com/terms" target="_blank" rel="noopener noreferrer" className="cursor-pointer hover:underline text-left md:text-center" style={{ color: "var(--brand)", fontSize: "10px" }}>
           Terms &amp; conditions
-        </button>
-        <button className="cursor-pointer hover:underline text-left md:text-center" style={{ color: "var(--danger)", fontSize: "10px" }}>
+        </a>
+        <a href="tel:988" className="cursor-pointer hover:underline text-left md:text-center" style={{ color: "var(--danger)", fontSize: "10px" }}>
           988 Crisis Lifeline
-        </button>
+        </a>
       </nav>
     </footer>
   );
