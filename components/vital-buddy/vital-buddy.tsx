@@ -9,6 +9,7 @@ import { ChatMessages } from "./chat-messages";
 import { CrisisScreen } from "./crisis-screen";
 import { ChatInput } from "./chat-input";
 import { PersistentFooter } from "./persistent-footer";
+import { ResourceDrawer } from "./resource-drawer";
 
 const CRISIS_KEYWORDS = ["suicide", "suicidal", "kill myself", "end it all", "better off dead", "no reason to live", "want to die", "self-harm", "hurt myself", "end my life", "not worth living"];
 
@@ -23,6 +24,7 @@ export function VitalBuddy() {
   const [loading, setLoading] = useState(false);
   const [showCrisis, setShowCrisis] = useState(false);
   const [showCloseSlider, setShowCloseSlider] = useState(false);
+  const [showResources, setShowResources] = useState(false);
   const [history, setHistory] = useState<{ role: string; content: string }[]>([]);
 
   const addMsg = useCallback((text: string, from: Message["from"] = "ai", type: Message["type"] = "normal") => {
@@ -111,13 +113,14 @@ export function VitalBuddy() {
         <div className="w-1.5 h-1.5 rounded-full" style={{ background: isConnected() ? "#639922" : "#BA7517" }} />
         {isConnected() ? "Connected to n8n" : "Demo mode — set NEXT_PUBLIC_N8N_WEBHOOK_URL to connect"}
       </div>
-      <ChatHeader phase={phase} openScore={openScore} onEndSession={handleEndSession} />
-      <main className="flex-1 overflow-y-auto">
+      <ChatHeader phase={phase} openScore={openScore} onEndSession={handleEndSession} onOpenResources={() => setShowResources(true)} />
+      <main className="flex-1 overflow-y-auto relative">
         {phase === "mode_select" && <ModeSelect onSelect={handleModeSelect} />}
         {showCrisis && <CrisisScreen onAcknowledge={() => { setShowCrisis(false); setPhase("done"); addMsg("Session ended. Take care of yourself.", "system"); }} />}
         {!showCrisis && phase !== "mode_select" && (
           <ChatMessages messages={messages} phase={phase} showSlider={showCloseSlider} sliderValue={score} onSliderChange={setScore} onSliderSubmit={phase === "stress_open" ? handleOpenScore : handleCloseScore} loading={loading} />
         )}
+        <ResourceDrawer isOpen={showResources} onClose={() => setShowResources(false)} />
       </main>
       {phase === "chat" && !showCloseSlider && <ChatInput value={input} onChange={setInput} onSend={handleSend} disabled={loading} />}
       <PersistentFooter />

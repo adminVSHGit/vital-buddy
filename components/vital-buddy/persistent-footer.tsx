@@ -14,6 +14,9 @@ export function PersistentFooter() {
           Connect to support
         </button>
         <button className="text-xs cursor-pointer hover:underline" style={{ color: "var(--brand)" }}>
+          Browse resources
+        </button>
+        <button className="text-xs cursor-pointer hover:underline" style={{ color: "var(--brand)" }}>
           Terms &amp; conditions
         </button>
         <button className="text-xs cursor-pointer hover:underline" style={{ color: "var(--danger)" }}>

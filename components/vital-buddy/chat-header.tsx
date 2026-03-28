@@ -7,9 +7,10 @@ interface ChatHeaderProps {
   phase: string;
   openScore: number | null;
   onEndSession: () => void;
+  onOpenResources: () => void;
 }
 
-export function ChatHeader({ phase, openScore, onEndSession }: ChatHeaderProps) {
+export function ChatHeader({ phase, openScore, onEndSession, onOpenResources }: ChatHeaderProps) {
   const inChat = phase === "chat";
 
   return (
@@ -34,12 +35,13 @@ export function ChatHeader({ phase, openScore, onEndSession }: ChatHeaderProps) 
         </div>
 
         {/* Logo — always top right */}
-        <div className="shrink-0">
+        <div className="shrink-0" style={{ width: '90px', height: '28px' }}>
           <Image
             src="/vital-start-logo.png"
             alt="VitalStart"
             width={90}
             height={28}
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
             priority
           />
         </div>
@@ -60,6 +62,13 @@ export function ChatHeader({ phase, openScore, onEndSession }: ChatHeaderProps) 
             </div>
           )}
           <div className="flex-1" />
+          <button
+            onClick={onOpenResources}
+            className="px-3 py-1.5 text-xs font-medium rounded-lg transition-opacity hover:opacity-80 cursor-pointer shrink-0"
+            style={{ background: "var(--surface-secondary)", color: "var(--foreground-subtle)" }}
+          >
+            Resources
+          </button>
           <button
             onClick={onEndSession}
             className="px-3 py-1.5 text-xs font-medium rounded-lg transition-opacity hover:opacity-80 cursor-pointer shrink-0"
