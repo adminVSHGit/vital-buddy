@@ -1,6 +1,5 @@
 "use client";
 
-// Resource drawer — slide-up panel for browsing wellness resources
 import { useState, useEffect } from "react";
 
 interface Resource {
@@ -94,7 +93,6 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
 
   return (
     <>
-      {/* Dark backdrop overlay */}
       <div
         onClick={onClose}
         style={{
@@ -107,7 +105,6 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
         }}
       />
 
-      {/* Drawer panel */}
       <div
         style={{
           position: "absolute",
@@ -115,13 +112,14 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
           zIndex: 50,
           display: "flex",
           flexDirection: "column",
-          background: "var(--card)",
+          background: "rgba(255, 255, 255, 0.95)",
+          borderRadius: "1rem",
+          overflow: "hidden",
         }}
       >
-        {/* Header */}
         <div
           className="flex items-center justify-between px-4 py-3 border-b shrink-0"
-          style={{ borderColor: "var(--border)" }}
+          style={{ borderColor: "rgba(0,0,0,0.08)" }}
         >
           <div>
             <p className="text-base font-medium">Resources</p>
@@ -132,7 +130,7 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
           <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors"
-            style={{ background: "var(--surface-secondary)" }}
+            style={{ background: "rgba(83, 74, 183, 0.08)" }}
             aria-label="Close resources"
           >
             <svg
@@ -149,25 +147,15 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
           </button>
         </div>
 
-        {/* Category tabs */}
-        <div
-          className="flex gap-2 px-4 py-3 overflow-x-auto shrink-0"
-          style={{ scrollbarWidth: "none" }}
-        >
+        <div className="flex gap-2 px-4 py-3 overflow-x-auto shrink-0" style={{ scrollbarWidth: "none" }}>
           {CATEGORIES.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
               className="px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-all shrink-0"
               style={{
-                background:
-                  activeCategory === cat.id
-                    ? "var(--brand-light)"
-                    : "var(--surface-secondary)",
-                color:
-                  activeCategory === cat.id
-                    ? "var(--brand)"
-                    : "var(--foreground-subtle)",
+                background: activeCategory === cat.id ? "var(--brand-light)" : "rgba(0,0,0,0.05)",
+                color: activeCategory === cat.id ? "var(--brand)" : "var(--foreground-subtle)",
               }}
             >
               {cat.label}
@@ -175,7 +163,6 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
           ))}
         </div>
 
-        {/* Resource list */}
         <div className="flex-1 overflow-y-auto px-4 pb-4">
           {loading && (
             <div className="flex items-center justify-center py-12">
@@ -203,8 +190,8 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
                   key={r.id}
                   className="rounded-xl overflow-hidden"
                   style={{
-                    background: "var(--background)",
-                    border: "0.5px solid var(--border)",
+                    background: "rgba(0,0,0,0.02)",
+                    border: "0.5px solid rgba(0,0,0,0.06)",
                   }}
                 >
                   {isPlaying && vimeoId && (
@@ -260,7 +247,7 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
                           <span
                             className="text-xs px-2 py-0.5 rounded"
                             style={{
-                              background: "var(--surface-secondary)",
+                              background: "rgba(0,0,0,0.05)",
                               color: "var(--foreground-ghost)",
                             }}
                           >
