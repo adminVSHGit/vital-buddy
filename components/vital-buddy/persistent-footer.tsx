@@ -1,8 +1,4 @@
-interface PersistentFooterProps {
-  onOpenResources?: () => void;
-}
-
-export function PersistentFooter({ onOpenResources }: PersistentFooterProps) {
+export function PersistentFooter({ onOpenResources }: { onOpenResources?: () => void }) {
   return (
     <footer
       className="px-4 pt-2.5 pb-2 border-t border-border shrink-0"
@@ -17,11 +13,7 @@ export function PersistentFooter({ onOpenResources }: PersistentFooterProps) {
         <button className="text-xs cursor-pointer hover:underline" style={{ color: "var(--brand)" }}>
           Connect to support
         </button>
-        <button 
-          onClick={onOpenResources}
-          className="text-xs cursor-pointer hover:underline" 
-          style={{ color: "var(--brand)" }}
-        >
+        <button onClick={onOpenResources} className="text-xs cursor-pointer hover:underline" style={{ color: "var(--brand)" }}>
           Browse resources
         </button>
         <button className="text-xs cursor-pointer hover:underline" style={{ color: "var(--brand)" }}>

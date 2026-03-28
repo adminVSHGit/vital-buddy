@@ -40,10 +40,10 @@ export function ChatInput({ value, onChange, onSend, disabled, onOpenResources }
         </button>
       </div>
       <div className="flex gap-2 mt-1.5 px-1">
-        <button 
+        <button
           onClick={onOpenResources}
           className="text-xs px-2.5 py-1 rounded-lg transition-opacity hover:opacity-80"
-          style={{ background: 'var(--brand-light)', color: 'var(--brand)' }}
+          style={{ background: "var(--brand-light)", color: "var(--brand)" }}
         >
           Browse resources
         </button>

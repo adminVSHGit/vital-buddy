@@ -50,10 +50,26 @@ export function VitalBuddy() {
 
     // Show opening INSTANTLY from local — no waiting
     const openers: Record<string, string[]> = {
-      standard: ["Hey — how's the shift been? Before we get into it...", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
-      critical_event: ["Sounds like a rough one. I've had those cases where you just stand in the hallway for a second. Let's check in.", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
-      grounding: ["Two minutes. I promise this works even when it sounds dumb. Ready?", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
-      pre_convo: ["Family meetings are rough. I still get nervous before them. Let's get you ready.", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
+      standard: [
+        "Hey — how's the shift been? Before we get into it...",
+        "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?",
+        "Quick heads up — hit the Resources button anytime if you need a quick reset. Breathing exercises, peer stories, sleep stuff. They're short and they actually work."
+      ],
+      critical_event: [
+        "Sounds like a rough one. I've had those cases where you just stand in the hallway for a second. Let's check in.",
+        "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?",
+        "Also — Resources tab up top has some 2-minute resets if you need one mid-conversation. No pressure."
+      ],
+      grounding: [
+        "Two minutes. I promise this works even when it sounds dumb. Ready?",
+        "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?",
+        "If you want to try a different exercise later, the Resources button has a few more options — breathing, body scans, the works."
+      ],
+      pre_convo: [
+        "Family meetings are rough. I still get nervous before them. Let's get you ready.",
+        "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?",
+        "Resources tab is there if you need a quick calm-down before you walk in. Just saying."
+      ],
     };
     (openers[m.id] ?? openers.standard).forEach((line) => addMsg(line));
 
