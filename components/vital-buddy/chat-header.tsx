@@ -35,16 +35,13 @@ export function ChatHeader({ phase, openScore, onEndSession, onOpenResources }: 
         </div>
 
         {/* Logo — always top right */}
-        <div className="shrink-0">
-          <Image
-            src="/vital-start-logo.png"
-            alt="VitalStart"
-            width={90}
-            height={28}
-            priority
-            style={{ height: 'auto', maxWidth: '90px' }}
-          />
-        </div>
+        <Image
+          src="/vital-start-logo.png"
+          alt="VitalStart"
+          width={90}
+          height={28}
+          priority
+        />
       </div>
 
       {/* Bottom row: action buttons — only shown during chat */}
