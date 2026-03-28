@@ -10,9 +10,9 @@
   --brand-dark: #26215C;
 
   /* shadcn tokens mapped to Vital Buddy palette */
-  --background: rgba(255, 255, 255, 0.75);
+  --background: rgba(255, 255, 255, 0.55);
   --foreground: #1a1a2e;
-  --card: rgba(255, 255, 255, 0.92);
+  --card: rgba(255, 255, 255, 0.85);
   --card-foreground: #1a1a2e;
   --popover: #ffffff;
   --popover-foreground: #1a1a2e;
@@ -26,7 +26,7 @@
   --accent-foreground: #26215C;
   --destructive: #A32D2D;
   --destructive-foreground: #ffffff;
-  --border: #e8e4dc;
+  --border: rgba(255, 255, 255, 0.4);
   --input: #e8e4dc;
   --ring: #534AB7;
   --radius: 0.75rem;

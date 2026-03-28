@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { SCORE_COLORS } from "@/lib/vital-buddy-types";
 
 interface ChatHeaderProps {
@@ -35,12 +34,11 @@ export function ChatHeader({ phase, openScore, onEndSession, onOpenResources }: 
         </div>
 
         {/* Logo — always top right */}
-        <Image
+        <img
           src="/vital-start-logo.png"
           alt="VitalStart"
           width={90}
           height={28}
-          priority
           style={{ width: "90px", height: "auto" }}
         />
       </div>
