@@ -1,5 +1,6 @@
-'use client';
+"use client";
 
+// v2 - clean rewrite
 interface ResourceDrawerProps {
   isOpen: boolean;
   onClose: () => void;
