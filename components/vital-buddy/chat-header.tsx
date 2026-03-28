@@ -37,8 +37,6 @@ export function ChatHeader({ phase, openScore, onEndSession, onOpenResources }: 
         <img
           src="/vital-start-logo.png"
           alt="VitalStart"
-          width={90}
-          height={28}
           style={{ width: "90px", height: "auto" }}
         />
       </div>
