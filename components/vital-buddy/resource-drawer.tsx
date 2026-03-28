@@ -10,6 +10,7 @@ interface Resource {
   content_url: string;
   duration_mins: number;
   category: string;
+  thumbnail_url?: string;
 }
 
 interface ResourceDrawerProps {
@@ -28,6 +29,10 @@ const CATEGORIES = [
 function getVimeoId(url: string): string | null {
   const match = url.match(/vimeo\.com\/(\d+)/);
   return match ? match[1] : null;
+}
+
+function getVimeoThumbnail(vimeoId: string): string {
+  return `https://vumbnail.com/${vimeoId}.jpg`;
 }
 
 function TypeIcon({ type }: { type: string }) {
@@ -112,15 +117,12 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
           zIndex: 50,
           display: "flex",
           flexDirection: "column",
-          background: "rgba(255, 255, 255, 0.95)",
+          background: "#ffffff",
           borderRadius: "1rem",
           overflow: "hidden",
         }}
       >
-        <div
-          className="flex items-center justify-between px-4 py-3 border-b shrink-0"
-          style={{ borderColor: "rgba(0,0,0,0.08)" }}
-        >
+        <div className="flex items-center justify-between px-4 py-3 shrink-0" style={{ borderBottom: "1px solid #f0f0f0" }}>
           <div>
             <p className="text-base font-medium">Resources</p>
             <p className="text-xs" style={{ color: "var(--foreground-ghost)" }}>
@@ -129,8 +131,7 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors"
-            style={{ background: "rgba(83, 74, 183, 0.08)" }}
+            className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors hover:bg-gray-100"
             aria-label="Close resources"
           >
             <svg
@@ -154,7 +155,7 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
               onClick={() => setActiveCategory(cat.id)}
               className="px-3 py-1.5 text-xs font-medium rounded-lg whitespace-nowrap transition-all shrink-0"
               style={{
-                background: activeCategory === cat.id ? "var(--brand-light)" : "rgba(0,0,0,0.05)",
+                background: activeCategory === cat.id ? "var(--brand-light)" : "#f5f5f5",
                 color: activeCategory === cat.id ? "var(--brand)" : "var(--foreground-subtle)",
               }}
             >
@@ -183,18 +184,12 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
           <div className="flex flex-col gap-3 mt-1">
             {filtered.map((r) => {
               const vimeoId = getVimeoId(r.content_url);
+              const thumbnail = vimeoId ? getVimeoThumbnail(vimeoId) : r.thumbnail_url;
               const isPlaying = playingId === r.id;
 
               return (
-                <div
-                  key={r.id}
-                  className="rounded-xl overflow-hidden"
-                  style={{
-                    background: "rgba(0,0,0,0.02)",
-                    border: "0.5px solid rgba(0,0,0,0.06)",
-                  }}
-                >
-                  {isPlaying && vimeoId && (
+                <div key={r.id} className="rounded-lg overflow-hidden bg-white">
+                  {isPlaying && vimeoId ? (
                     <div style={{ aspectRatio: "16/9" }}>
                       <iframe
                         src={`https://player.vimeo.com/video/${vimeoId}?autoplay=1&badge=0&autopause=0`}
@@ -208,28 +203,52 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
                         title={r.title}
                       />
                     </div>
+                  ) : (
+                    <>
+                      {thumbnail && (
+                        <div
+                          style={{
+                            position: "relative",
+                            aspectRatio: "16/9",
+                            background: "#f0f0f0",
+                            overflow: "hidden",
+                          }}
+                        >
+                          <img
+                            src={thumbnail}
+                            alt={r.title}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                          />
+                          <button
+                            onClick={() => setPlayingId(r.id)}
+                            className="absolute inset-0 flex items-center justify-center hover:bg-black/20 transition-colors"
+                            aria-label={`Play ${r.title}`}
+                          >
+                            <div
+                              className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg"
+                              style={{ background: "var(--brand)" }}
+                            >
+                              <svg
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="white"
+                              >
+                                <path d="M8 5v14l11-7z" />
+                              </svg>
+                            </div>
+                          </button>
+                        </div>
+                      )}
+                    </>
                   )}
 
                   <div className="p-3">
-                    <div className="flex items-start gap-3">
-                      {!isPlaying && (
-                        <button
-                          onClick={() => setPlayingId(r.id)}
-                          className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0 transition-opacity hover:opacity-80"
-                          style={{ background: "var(--brand-light)" }}
-                          aria-label={`Play ${r.title}`}
-                        >
-                          <svg
-                            width="18"
-                            height="18"
-                            viewBox="0 0 24 24"
-                            fill="var(--brand)"
-                          >
-                            <path d="M8 5v14l11-7z" />
-                          </svg>
-                        </button>
-                      )}
-
+                    <div className="flex items-start gap-2">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 mb-0.5">
                           <span style={{ color: "var(--brand)" }}>
@@ -238,16 +257,16 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
                           <p className="text-sm font-medium truncate">{r.title}</p>
                         </div>
                         <p
-                          className="text-xs leading-relaxed"
+                          className="text-xs leading-relaxed mb-1.5"
                           style={{ color: "var(--foreground-subtle)" }}
                         >
                           {r.description}
                         </p>
-                        <div className="flex items-center gap-2 mt-1.5">
+                        <div className="flex items-center gap-2">
                           <span
                             className="text-xs px-2 py-0.5 rounded"
                             style={{
-                              background: "rgba(0,0,0,0.05)",
+                              background: "#f5f5f5",
                               color: "var(--foreground-ghost)",
                             }}
                           >
@@ -256,10 +275,10 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
                           {isPlaying && (
                             <button
                               onClick={() => setPlayingId(null)}
-                              className="text-xs"
-                              style={{ color: "var(--foreground-ghost)" }}
+                              className="text-xs px-2 py-0.5 rounded"
+                              style={{ background: "#f5f5f5", color: "var(--foreground-ghost)" }}
                             >
-                              Close player
+                              Close
                             </button>
                           )}
                         </div>
