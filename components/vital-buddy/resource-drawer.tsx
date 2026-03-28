@@ -234,45 +234,40 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
               <button
                 key={r.id}
                 onClick={() => setPlayingId(r.id)}
-                className="text-left rounded-xl overflow-hidden cursor-pointer"
+                className="text-left rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-md active:scale-[0.98]"
                 style={{
                   background: "var(--background)",
-                  border: "0.5px solid var(--border)",
+                  border: "1px solid var(--border)",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
                 }}
               >
-                {/* Vimeo thumbnail */}
+                {/* Vimeo embed as thumbnail — shows first frame of video */}
                 <div
                   className="relative w-full overflow-hidden"
                   style={{
                     aspectRatio: "16/9",
-                    background: "var(--surface-secondary)",
+                    background: "#f5f3ef",
                   }}
                 >
-                  <img
-                    src={`https://vumbnail.com/${r.vimeoId}.jpg`}
-                    alt={r.title}
-                    className="w-full h-full object-cover"
+                  <iframe
+                    src={`https://player.vimeo.com/video/${r.vimeoId}?badge=0&autopause=1&player_id=0&app_id=0`}
+                    width="100%"
+                    height="100%"
+                    frameBorder="0"
+                    style={{ display: "block", pointerEvents: "none" }}
                     loading="lazy"
-                    onError={(e) => {
-                      const img = e.target as HTMLImageElement;
-                      img.style.display = "none";
-                    }}
+                    title={r.title}
                   />
-                  {/* Play button overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center">
+                  {/* Play button overlay — clickable */}
+                  <div className="absolute inset-0 flex items-center justify-center" style={{ pointerEvents: "auto" }}>
                     <div
                       className="w-10 h-10 rounded-full flex items-center justify-center"
                       style={{
-                        background: "rgba(255,255,255,0.9)",
+                        background: "rgba(255,255,255,0.92)",
                         boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
                       }}
                     >
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="var(--brand)"
-                      >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--brand)">
                         <path d="M8 5v14l11-7z" />
                       </svg>
                     </div>
@@ -280,11 +275,7 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
                   {/* Duration badge */}
                   <div
                     className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded text-white"
-                    style={{
-                      background: "rgba(0,0,0,0.65)",
-                      fontSize: "10px",
-                      fontWeight: 500,
-                    }}
+                    style={{ background: "rgba(0,0,0,0.65)", fontSize: "10px", fontWeight: 500, pointerEvents: "none" }}
                   >
                     {r.duration_mins} min
                   </div>
@@ -292,7 +283,7 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
 
                 {/* Title + description */}
                 <div className="p-2.5">
-                  <p className="text-xs font-medium leading-tight mb-0.5">
+                  <p className="text-sm font-medium leading-tight mb-0.5">
                     {r.title}
                   </p>
                   <p
