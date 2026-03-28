@@ -9,7 +9,7 @@ import { ChatMessages } from "./chat-messages";
 import { CrisisScreen } from "./crisis-screen";
 import { ChatInput } from "./chat-input";
 import { PersistentFooter } from "./persistent-footer";
-import { ResourceDrawer } from "./resource-drawer";
+import { ResourceDrawer } from "./resources-panel";
 
 const CRISIS_KEYWORDS = ["suicide", "suicidal", "kill myself", "end it all", "better off dead", "no reason to live", "want to die", "self-harm", "hurt myself", "end my life", "not worth living"];
 
@@ -68,7 +68,7 @@ export function VitalBuddy() {
       pre_convo: [
         "Family meetings are rough. I still get nervous before them. Let's get you ready.",
         "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?",
-        "Resources tab is there if you need a quick calm-down before you walk in. Just saying."
+        "Before we prep — check out the Resources tab. The 'Ready and Empowered' grounding exercise is a 2-minute reset that gets you centered before walking in. Seriously worth it.",
       ],
     };
     (openers[m.id] ?? openers.standard).forEach((line) => addMsg(line));
