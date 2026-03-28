@@ -1,15 +1,15 @@
 "use client";
 
-import Image from "next/image";
 import { SCORE_COLORS } from "@/lib/vital-buddy-types";
 
 interface ChatHeaderProps {
   phase: string;
   openScore: number | null;
   onEndSession: () => void;
+  onOpenResources: () => void;
 }
 
-export function ChatHeader({ phase, openScore, onEndSession }: ChatHeaderProps) {
+export function ChatHeader({ phase, openScore, onEndSession, onOpenResources }: ChatHeaderProps) {
   const inChat = phase === "chat";
 
   return (
@@ -34,16 +34,12 @@ export function ChatHeader({ phase, openScore, onEndSession }: ChatHeaderProps) 
         </div>
 
         {/* Logo — always top right */}
-        <div className="shrink-0 h-7">
-          <Image
-            src="/vital-start-logo.png"
-            alt="VitalStart"
-            width={90}
-            height={28}
-            style={{ height: '28px', width: 'auto', maxWidth: 'none' }}
-            priority
-          />
-        </div>
+        <img
+          src="/vital-start-logo.png"
+          alt="VitalStart"
+          className="shrink-0"
+          style={{ width: "90px", height: "auto" }}
+        />
       </div>
 
       {/* Bottom row: action buttons — only shown during chat */}
@@ -61,6 +57,13 @@ export function ChatHeader({ phase, openScore, onEndSession }: ChatHeaderProps) 
             </div>
           )}
           <div className="flex-1" />
+          <button
+            onClick={onOpenResources}
+            className="px-3 py-1.5 text-xs font-medium rounded-lg transition-opacity hover:opacity-80 cursor-pointer shrink-0"
+            style={{ background: "var(--surface-secondary)", color: "var(--foreground-subtle)" }}
+          >
+            Resources
+          </button>
           <button
             onClick={onEndSession}
             className="px-3 py-1.5 text-xs font-medium rounded-lg transition-opacity hover:opacity-80 cursor-pointer shrink-0"

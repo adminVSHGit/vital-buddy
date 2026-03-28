@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, ReactNode } from "react";
 import type { Message } from "@/lib/vital-buddy-types";
 import { EscalationBubble } from "./escalation-bubble";
 import { StressSlider } from "./stress-slider";
@@ -13,6 +13,180 @@ interface ChatMessagesProps {
   onSliderChange: (v: number) => void;
   onSliderSubmit: (v: number) => void;
   loading?: boolean;
+}
+
+function renderMessageContent(text: string): ReactNode {
+  const vimeoRegex = /https?:\/\/(?:www\.)?vimeo\.com\/\d+[^\s)"\]']*/g;
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  
+  const parts: ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+
+  // First, handle Vimeo URLs
+  const vimeoMatches: Array<{ url: string; id: string; index: number }> = [];
+  while ((match = vimeoRegex.exec(text)) !== null) {
+    const matchedUrl = match[0];
+    const idMatch = matchedUrl.match(/vimeo\.com\/(\d+)/);
+    const vimeoId = idMatch ? idMatch[1] : null;
+    if (vimeoId) {
+      vimeoMatches.push({
+        url: matchedUrl,
+        id: vimeoId,
+        index: match.index,
+      });
+    }
+  }
+
+  if (vimeoMatches.length === 0) {
+    // No Vimeo videos, just handle regular URLs and text
+    const textParts: ReactNode[] = [];
+    let textLastIndex = 0;
+    const urlMatches = [...text.matchAll(urlRegex)];
+    
+    urlMatches.forEach((urlMatch) => {
+      if (urlMatch.index! > textLastIndex) {
+        textParts.push(text.substring(textLastIndex, urlMatch.index));
+      }
+      textParts.push(
+        <a
+          key={`url-${urlMatch.index}`}
+          href={urlMatch[0]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+          style={{ color: "var(--brand)" }}
+        >
+          {urlMatch[0]}
+        </a>
+      );
+      textLastIndex = urlMatch.index! + urlMatch[0].length;
+    });
+    
+    if (textLastIndex < text.length) {
+      textParts.push(text.substring(textLastIndex));
+    }
+    return <span>{textParts}</span>;
+  }
+
+  // Handle mixed content with Vimeo videos
+  vimeoMatches.forEach((vimeo, idx) => {
+    // Add text before this Vimeo URL
+    if (vimeo.index > lastIndex) {
+      const beforeText = text.substring(lastIndex, vimeo.index);
+      const urlMatches = [...beforeText.matchAll(urlRegex)];
+      const beforeParts: ReactNode[] = [];
+      let beforeLastIndex = 0;
+
+      urlMatches.forEach((urlMatch) => {
+        if (urlMatch.index! > beforeLastIndex) {
+          beforeParts.push(beforeText.substring(beforeLastIndex, urlMatch.index));
+        }
+        beforeParts.push(
+          <a
+            key={`url-${lastIndex}-${urlMatch.index}`}
+            href={urlMatch[0]}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+            style={{ color: "var(--brand)" }}
+          >
+            {urlMatch[0]}
+          </a>
+        );
+        beforeLastIndex = urlMatch.index! + urlMatch[0].length;
+      });
+
+      if (beforeLastIndex < beforeText.length) {
+        beforeParts.push(beforeText.substring(beforeLastIndex));
+      }
+
+      if (beforeParts.length > 0) {
+        parts.push(beforeParts);
+      }
+    }
+
+    // Add Vimeo video embed
+    parts.push(
+      <div key={`vimeo-${idx}`} className="mt-2 mb-1">
+        <div
+          className="rounded-xl overflow-hidden"
+          style={{
+            border: "0.5px solid var(--border)",
+            aspectRatio: "16/9",
+          }}
+        >
+          <iframe
+            src={`https://player.vimeo.com/video/${vimeo.id}?badge=0&autopause=0&player_id=0`}
+            width="100%"
+            height="100%"
+            frameBorder="0"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+            title="Vital Buddy resource"
+            style={{ display: "block" }}
+            sandbox="allow-scripts allow-same-origin"
+          />
+        </div>
+        <div
+          className="flex items-center gap-1.5 mt-1"
+          style={{
+            fontSize: "11px",
+            color: "var(--foreground-ghost)",
+          }}
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          <span>Vital Buddy resource</span>
+        </div>
+      </div>
+    );
+
+    lastIndex = vimeo.index + vimeo.url.length;
+  });
+
+  // Add any remaining text after the last Vimeo URL
+  if (lastIndex < text.length) {
+    const remainingText = text.substring(lastIndex);
+    const urlMatches = [...remainingText.matchAll(urlRegex)];
+    const remainingParts: ReactNode[] = [];
+    let remainingLastIndex = 0;
+
+    urlMatches.forEach((urlMatch) => {
+      if (urlMatch.index! > remainingLastIndex) {
+        remainingParts.push(remainingText.substring(remainingLastIndex, urlMatch.index));
+      }
+      remainingParts.push(
+        <a
+          key={`url-end-${urlMatch.index}`}
+          href={urlMatch[0]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+          style={{ color: "var(--brand)" }}
+        >
+          {urlMatch[0]}
+        </a>
+      );
+      remainingLastIndex = urlMatch.index! + urlMatch[0].length;
+    });
+
+    if (remainingLastIndex < remainingText.length) {
+      remainingParts.push(remainingText.substring(remainingLastIndex));
+    }
+
+    if (remainingParts.length > 0) {
+      parts.push(remainingParts);
+    }
+  }
+
+  return <span>{parts}</span>;
 }
 
 function TypingIndicator() {
@@ -37,13 +211,43 @@ export function ChatMessages({ messages, phase, showSlider, sliderValue, onSlide
         if (m.from === "system") return <p key={i} className="text-center text-xs py-2" style={{ color: "var(--foreground-ghost)" }}>{m.text}</p>;
         const isUser = m.from === "user";
         return (
-          <div key={i} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+          <div key={i} className={`flex flex-col ${isUser ? "items-end" : "items-start"}`}>
             <div className="max-w-[85%] px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap" style={{
               borderRadius: isUser ? "14px 4px 14px 14px" : "4px 14px 14px 14px",
               background: isUser ? "var(--brand-light)" : "var(--card)",
               color: isUser ? "var(--brand-dark)" : "var(--foreground-muted)",
               border: isUser ? "none" : "0.5px solid var(--border)",
-            }}>{m.text}</div>
+            }}>{isUser ? m.text : renderMessageContent(m.text)}</div>
+            {!isUser && m.resources && m.resources.length > 0 && (
+              <div className="flex flex-col gap-2 mt-2 max-w-[85%]">
+                {m.resources.slice(0, 2).map((r: any, ri: number) => {
+                  const vimeoMatch = (r.content_url || '').match(/vimeo\.com\/(\d+)/);
+                  const vimeoId = vimeoMatch ? vimeoMatch[1] : null;
+                  return (
+                    <div key={ri} className="rounded-xl overflow-hidden" style={{ background: 'var(--card)', border: '0.5px solid var(--border)' }}>
+                      {vimeoId && (
+                        <div style={{ aspectRatio: '16/9' }}>
+                          <iframe
+                            src={`https://player.vimeo.com/video/${vimeoId}?badge=0&autopause=0`}
+                            width="100%" height="100%" frameBorder="0"
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            allowFullScreen
+                            sandbox="allow-scripts allow-same-origin"
+                            style={{ display: 'block' }}
+                          />
+                        </div>
+                      )}
+                      <div className="px-3 py-2">
+                        <p className="text-xs font-medium">{r.title}</p>
+                        <p className="text-xs mt-0.5" style={{ color: 'var(--foreground-ghost)' }}>
+                          {r.duration_mins} min • {r.description?.substring(0, 80)}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         );
       })}

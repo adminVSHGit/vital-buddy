@@ -9,8 +9,9 @@ import { ChatMessages } from "./chat-messages";
 import { CrisisScreen } from "./crisis-screen";
 import { ChatInput } from "./chat-input";
 import { PersistentFooter } from "./persistent-footer";
+import { ResourceDrawer } from "./resource-drawer";
 
-const CRISIS_KEYWORDS = ["suicide","suicidal","kill myself","end it all","better off dead","no reason to live","want to die","self-harm","hurt myself","end my life","not worth living"];
+const CRISIS_KEYWORDS = ["suicide", "suicidal", "kill myself", "end it all", "better off dead", "no reason to live", "want to die", "self-harm", "hurt myself", "end my life", "not worth living"];
 
 export function VitalBuddy() {
   const [phase, setPhase] = useState<Phase>("mode_select");
@@ -23,10 +24,11 @@ export function VitalBuddy() {
   const [loading, setLoading] = useState(false);
   const [showCrisis, setShowCrisis] = useState(false);
   const [showCloseSlider, setShowCloseSlider] = useState(false);
+  const [showResources, setShowResources] = useState(false);
   const [history, setHistory] = useState<{ role: string; content: string }[]>([]);
 
-  const addMsg = useCallback((text: string, from: Message["from"] = "ai", type: Message["type"] = "normal") => {
-    setMessages((prev) => [...prev, { text, from, type, time: new Date() }]);
+  const addMsg = useCallback((text: string, from: Message["from"] = "ai", type: Message["type"] = "normal", resources: any[] = []) => {
+    setMessages((prev) => [...prev, { text, from, type, time: new Date(), resources }]);
     if (from === "user") setHistory((prev) => [...prev, { role: "user", content: text }]);
     else if (type === "normal" && from === "ai") setHistory((prev) => [...prev, { role: "assistant", content: text }]);
   }, []);
@@ -37,30 +39,34 @@ export function VitalBuddy() {
     if (!text) return;
     if (res.type === "escalation" || res.filtered) {
       try { const p = JSON.parse(text); addMsg(p.message || text, "ai", "escalation"); } catch { addMsg(text, "ai", "escalation"); }
-    } else { addMsg(text); }
+    } else {
+      addMsg(text, "ai", "normal", res.resources || []);
+    }
   }, [addMsg]);
 
   const handleModeSelect = async (m: Mode) => {
     setMode(m); setPhase("stress_open");
     const sid = crypto.randomUUID(); setSessionId(sid);
+
+    // Show opening INSTANTLY from local — no waiting
+    const openers: Record<string, string[]> = {
+      standard: ["Hey — how's the shift been? Before we get into it...", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
+      critical_event: ["Sounds like a rough one. I've had those cases where you just stand in the hallway for a second. Let's check in.", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
+      grounding: ["Two minutes. I promise this works even when it sounds dumb. Ready?", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
+      pre_convo: ["Family meetings are rough. I still get nervous before them. Let's get you ready.", "I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
+    };
+    (openers[m.id] ?? openers.standard).forEach((line) => addMsg(line));
+
+    // Call n8n in background for session logging — don't wait for it
     if (isConnected()) {
-      setLoading(true);
-      const res = await startSession(m.id, sid);
-      setLoading(false); handleN8NResponse(res);
-    } else {
-      const fb: Record<string, string[]> = {
-        standard: ["Hey — how's the shift been? Before we get into it...","I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
-        critical_event: ["Sounds like a rough one. I've had those cases where you just stand in the hallway for a second. Let's check in.","I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
-        grounding: ["Two minutes. I promise this works even when it sounds dumb. Ready?","I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
-        pre_convo: ["Family meetings are rough. I still get nervous before them. Let's get you ready.","I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"],
-      };
-      (fb[m.id] ?? fb.standard).forEach((line) => addMsg(line));
+      startSession(m.id, sid).catch(() => {});
     }
   };
 
   const handleOpenScore = async (s: number) => {
     addMsg(String(s), "user"); setOpenScore(s);
-    if (s === 10) { setShowCrisis(true); setPhase("crisis");
+    if (s === 10) {
+      setShowCrisis(true); setPhase("crisis");
       if (isConnected() && sessionId && mode) sendMessage({ sessionId, message: "STRESS_SCORE:10", openingScore: 10, mode: mode.id, history: [] });
       return;
     }
@@ -86,48 +92,40 @@ export function VitalBuddy() {
       const res = await sendMessage({ sessionId, message: text, openingScore: openScore, mode: mode.id, history: history.slice(-10) });
       setLoading(false); handleN8NResponse(res);
     } else {
-      const oos = ["dosage","prescri","diagnos","medication","should i take","what drug","what pill","is this depression","do i have"];
+      const oos = ["dosage", "prescri", "diagnos", "medication", "should i take", "what drug", "what pill", "is this depression", "do i have"];
       if (oos.some((w) => lc.includes(w))) { setMessages((prev) => [...prev, { text: "__ESCALATION__", from: "ai", type: "escalation", time: new Date() }]); return; }
-      const fb = ["That sounds really heavy. When you step back, what do you think is driving most of that weight?","I hear you. Is this something that needs solving today, or something you need to just survive today?","That makes sense. What would you tell a fellow resident if they came to you with exactly this?","You're carrying a lot. What's one piece of this that is actually in your hands right now?","That's a really valid response to an impossible situation. What would 'good enough for today' look like?"];
+      const fb = ["That sounds really heavy. When you step back, what do you think is driving most of that weight?", "I hear you. Is this something that needs solving today, or something you need to just survive today?", "That makes sense. What would you tell a fellow resident if they came to you with exactly this?", "You're carrying a lot. What's one piece of this that is actually in your hands right now?", "That's a really valid response to an impossible situation. What would 'good enough for today' look like?"];
       setTimeout(() => addMsg(fb[Math.floor(Math.random() * fb.length)]), 800);
     }
   };
 
-  const handleEndSession = () => { setShowCloseSlider(true); addMsg("I am here for you. How stressful are you feeling currently, from 0 to 10, with 10 signifying highest stress?"); };
+  const handleEndSession = () => { setShowCloseSlider(true); addMsg("Alright, catch up soon! I am always here for you. Before you go, how are you feeling now from 0 to 10 with 10 being the most stressed? This helps me support you better, thanks!"); };
 
   const handleCloseScore = async (s: number) => {
     addMsg(String(s), "user"); setShowCloseSlider(false);
     if (isConnected() && sessionId && openScore !== null && mode) {
-      setLoading(true);
-      const res = await closeSession(sessionId, openScore, s, mode.id);
-      setLoading(false);
-      const text = res.message || res.output || ""; if (text) addMsg(text);
-    } else {
-      const delta = (openScore ?? s) - s;
-      if (delta > 0) addMsg(`Your stress moved from ${openScore} to ${s}. That's real. Showing up for yourself when you're this tired takes something. See you next time.`);
-      else if (delta === 0) addMsg(`Your stress stayed at ${s}. Sometimes it's just about not letting it climb higher — that counts.`);
-      else addMsg(`Your stress moved from ${openScore} to ${s}. That was a tough one. Thank you for showing up for yourself. There are people who are good at this — want me to point you somewhere?`);
+      closeSession(sessionId, openScore, s, mode.id);
     }
-    setPhase("done");
-    setTimeout(() => { setPhase("mode_select"); setMessages([]); setScore(4); setOpenScore(null); setSessionId(null); setMode(null); setInput(""); setHistory([]); }, 3500);
+    setPhase("mode_select"); setMessages([]); setScore(4); setOpenScore(null); setSessionId(null); setMode(null); setInput(""); setHistory([]);
   };
 
   return (
-    <div className="flex flex-col w-full h-full max-h-[740px] rounded-2xl overflow-hidden border border-border" style={{ background: "var(--background)" }}>
+    <div className="flex flex-col w-full h-full max-h-[740px] rounded-2xl overflow-hidden" style={{ background: "var(--background)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", boxShadow: "0 8px 32px rgba(83, 74, 183, 0.12), 0 0 0 1px rgba(255,255,255,0.5) inset", border: "1px solid rgba(255,255,255,0.3)" }}>
       <div className="flex items-center gap-1.5 px-4 py-1.5 text-xs border-b" style={{ background: isConnected() ? "#EAF3DE" : "#FAEEDA", borderColor: isConnected() ? "#C0DD97" : "#EF9F27", color: isConnected() ? "#27500A" : "#633806" }}>
         <div className="w-1.5 h-1.5 rounded-full" style={{ background: isConnected() ? "#639922" : "#BA7517" }} />
         {isConnected() ? "Connected to n8n" : "Demo mode — set NEXT_PUBLIC_N8N_WEBHOOK_URL to connect"}
       </div>
-      <ChatHeader phase={phase} openScore={openScore} onEndSession={handleEndSession} />
-      <main className="flex-1 overflow-y-auto">
+      <ChatHeader phase={phase} openScore={openScore} onEndSession={handleEndSession} onOpenResources={() => setShowResources(true)} />
+      <main className="flex-1 overflow-y-auto relative">
         {phase === "mode_select" && <ModeSelect onSelect={handleModeSelect} />}
         {showCrisis && <CrisisScreen onAcknowledge={() => { setShowCrisis(false); setPhase("done"); addMsg("Session ended. Take care of yourself.", "system"); }} />}
         {!showCrisis && phase !== "mode_select" && (
           <ChatMessages messages={messages} phase={phase} showSlider={showCloseSlider} sliderValue={score} onSliderChange={setScore} onSliderSubmit={phase === "stress_open" ? handleOpenScore : handleCloseScore} loading={loading} />
         )}
+        <ResourceDrawer isOpen={showResources} onClose={() => setShowResources(false)} />
       </main>
-      {phase === "chat" && !showCloseSlider && <ChatInput value={input} onChange={setInput} onSend={handleSend} disabled={loading} />}
-      <PersistentFooter />
+      {phase === "chat" && !showCloseSlider && <ChatInput value={input} onChange={setInput} onSend={handleSend} disabled={loading} onOpenResources={() => setShowResources(true)} />}
+      <PersistentFooter onOpenResources={() => setShowResources(true)} />
     </div>
   );
 }
