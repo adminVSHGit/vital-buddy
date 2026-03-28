@@ -9,7 +9,6 @@ import { ChatMessages } from "./chat-messages";
 import { CrisisScreen } from "./crisis-screen";
 import { ChatInput } from "./chat-input";
 import { PersistentFooter } from "./persistent-footer";
-import { ResourceDrawer } from "./resource-drawer";
 
 const CRISIS_KEYWORDS = ["suicide", "suicidal", "kill myself", "end it all", "better off dead", "no reason to live", "want to die", "self-harm", "hurt myself", "end my life", "not worth living"];
 
@@ -24,7 +23,6 @@ export function VitalBuddy() {
   const [loading, setLoading] = useState(false);
   const [showCrisis, setShowCrisis] = useState(false);
   const [showCloseSlider, setShowCloseSlider] = useState(false);
-  const [showResources, setShowResources] = useState(false);
   const [history, setHistory] = useState<{ role: string; content: string }[]>([]);
 
   const addMsg = useCallback((text: string, from: Message["from"] = "ai", type: Message["type"] = "normal", resources: any[] = []) => {
@@ -110,18 +108,17 @@ export function VitalBuddy() {
   };
 
   return (
-    <div className="flex flex-col w-full h-full md:max-h-[740px] md:rounded-2xl overflow-hidden" style={{ background: "var(--background)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", boxShadow: "0 8px 32px rgba(83, 74, 183, 0.12), 0 0 0 1px rgba(255,255,255,0.5) inset", border: "1px solid rgba(255,255,255,0.3)" }}>
-      <ChatHeader phase={phase} openScore={openScore} onEndSession={handleEndSession} onOpenResources={() => setShowResources(true)} />
+    <div className="flex flex-col w-full h-full max-h-[740px] rounded-2xl overflow-hidden" style={{ background: "var(--background)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", boxShadow: "0 8px 32px rgba(83, 74, 183, 0.12), 0 0 0 1px rgba(255,255,255,0.5) inset", border: "1px solid rgba(255,255,255,0.3)" }}>
+      <ChatHeader phase={phase} openScore={openScore} onEndSession={handleEndSession} />
       <main className="flex-1 overflow-y-auto relative">
         {phase === "mode_select" && <ModeSelect onSelect={handleModeSelect} />}
         {showCrisis && <CrisisScreen onAcknowledge={() => { setShowCrisis(false); setPhase("done"); addMsg("Session ended. Take care of yourself.", "system"); }} />}
         {!showCrisis && phase !== "mode_select" && (
           <ChatMessages messages={messages} phase={phase} showSlider={showCloseSlider} sliderValue={score} onSliderChange={setScore} onSliderSubmit={phase === "stress_open" ? handleOpenScore : handleCloseScore} loading={loading} />
         )}
-        <ResourceDrawer isOpen={showResources} onClose={() => setShowResources(false)} />
       </main>
-      {phase === "chat" && !showCloseSlider && <ChatInput value={input} onChange={setInput} onSend={handleSend} disabled={loading} onOpenResources={() => setShowResources(true)} />}
-      <PersistentFooter onOpenResources={() => setShowResources(true)} />
+      {phase === "chat" && !showCloseSlider && <ChatInput value={input} onChange={setInput} onSend={handleSend} disabled={loading} />}
+      <PersistentFooter />
     </div>
   );
 }
