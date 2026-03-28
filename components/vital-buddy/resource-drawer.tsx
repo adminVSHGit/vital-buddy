@@ -89,16 +89,31 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
   if (!isOpen) return null;
 
   return (
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        zIndex: 50,
-        display: "flex",
-        flexDirection: "column",
-        background: "var(--background)",
-      }}
-    >
+    <>
+      {/* Opaque backdrop overlay */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          zIndex: 40,
+          background: "rgba(0, 0, 0, 0.4)",
+          backdropFilter: "blur(4px)",
+          WebkitBackdropFilter: "blur(4px)",
+        }}
+        onClick={onClose}
+      />
+      
+      {/* Drawer panel */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          zIndex: 50,
+          display: "flex",
+          flexDirection: "column",
+          background: "var(--background)",
+        }}
+      >
       {/* Header */}
       <div
         className="flex items-center justify-between px-4 py-3 border-b"
@@ -270,6 +285,6 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
           })}
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -10,9 +10,9 @@
   --brand-dark: #26215C;
 
   /* shadcn tokens mapped to Vital Buddy palette */
-  --background: rgba(255, 255, 255, 0.55);
+  --background: rgba(230, 245, 255, 0.45);
   --foreground: #1a1a2e;
-  --card: rgba(255, 255, 255, 0.85);
+  --card: rgba(245, 250, 255, 0.88);
   --card-foreground: #1a1a2e;
   --popover: #ffffff;
   --popover-foreground: #1a1a2e;
