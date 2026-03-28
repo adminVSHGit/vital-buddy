@@ -264,10 +264,9 @@ export function ResourceDrawer({ isOpen, onClose }: ResourceDrawerProps) {
                       </div>
                     </div>
                   </div>
-        </div>
-      </div>
-    </div>
-  );
+                </div>
+              </div>
+            );
           })}
         </div>
       </div>
